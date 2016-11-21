@@ -45,7 +45,7 @@ namespace odb
     {
       // If the pointer has expired but can be re-loaded, then don't throw.
       //
-      p_ = r.lock ().get_eager ();
+      p_ = r.lock ();
 
       if (!p_ && !i_)
         throw ::boost::bad_weak_ptr ();
@@ -535,13 +535,6 @@ namespace odb
     {
       bool i (i_);
       return expired () != i; // expired () XOR i_
-    }
-
-    template <class T>
-    inline lazy_shared_ptr<T> lazy_weak_ptr<T>::
-    lock () const
-    {
-      return lazy_shared_ptr<T> (p_.lock (), i_);
     }
 
     template <class T>

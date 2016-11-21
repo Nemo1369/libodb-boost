@@ -9,7 +9,6 @@
 
 #include <odb/exceptions.hxx>
 
-#include <odb/details/config.hxx> // ODB_NOTHROW_NOEXCEPT
 #include <odb/boost/details/export.hxx>
 
 namespace odb
@@ -19,7 +18,7 @@ namespace odb
     struct LIBODB_BOOST_EXPORT exception: odb::exception
     {
       virtual const char*
-      what () const ODB_NOTHROW_NOEXCEPT = 0;
+      what () const throw () = 0;
     };
   }
 }

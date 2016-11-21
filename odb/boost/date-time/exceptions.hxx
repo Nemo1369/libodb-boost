@@ -7,8 +7,6 @@
 
 #include <odb/pre.hxx>
 
-#include <odb/details/config.hxx> // ODB_NOTHROW_NOEXCEPT
-
 #include <odb/boost/exception.hxx>
 #include <odb/boost/details/export.hxx>
 
@@ -21,7 +19,7 @@ namespace odb
       struct LIBODB_BOOST_EXPORT special_value: exception
       {
         virtual const char*
-        what () const ODB_NOTHROW_NOEXCEPT;
+        what () const throw ();
 
         virtual special_value*
         clone () const;
@@ -30,7 +28,7 @@ namespace odb
       struct LIBODB_BOOST_EXPORT value_out_of_range: exception
       {
         virtual const char*
-        what () const ODB_NOTHROW_NOEXCEPT;
+        what () const throw ();
 
         virtual value_out_of_range*
         clone () const;

@@ -11,7 +11,7 @@ namespace odb
     namespace date_time
     {
       const char* special_value::
-      what () const ODB_NOTHROW_NOEXCEPT
+      what () const throw ()
       {
         return "unrepresentable date/time special value";
       }
@@ -23,7 +23,7 @@ namespace odb
       }
 
       const char* value_out_of_range::
-      what () const ODB_NOTHROW_NOEXCEPT
+      what () const throw ()
       {
         return "date/time value out of range";
       }
