@@ -34,7 +34,7 @@ set(ODB_ORACLE_SOURCES_DIR "" CACHE STRING "libodb-oracle source directory path"
 set(ODB_PGSQL_SOURCES_DIR "" CACHE STRING "libodb-pgsql source directory path")
 set(ODB_SQLITE_SOURCES_DIR "" CACHE STRING "libodb-sqlite source directory path")
 
-set(APPLE_SIGN_IDENTITY "iPhone Developer: nemo1369@gmail.com (S686GL5RJ6)" CACHE STRING "Sign identity name")
+set(APPLE_CODE_SIGN_IDENTITY "" CACHE STRING "Sign identity name")
 
 set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)" CACHE string "Build architecture")
 
