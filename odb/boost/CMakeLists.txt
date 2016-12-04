@@ -247,36 +247,83 @@ if(BUILD_SHARED_LIBRARIES)
             ${${CURRENT_TARGET}_HEADERS}
             ${${CURRENT_TARGET}_SOURCES}
             )
-else()
-    add_library(${CURRENT_TARGET} STATIC
-            ${${CURRENT_TARGET}_HEADERS}
-            ${${CURRENT_TARGET}_SOURCES}
+
+    target_include_directories(${CURRENT_TARGET} PUBLIC
+            "$<BUILD_INTERFACE:${${CURRENT_TARGET}_INCLUDES}>"
             )
-endif()
 
-target_include_directories(${CURRENT_TARGET} PUBLIC
-        "$<BUILD_INTERFACE:${${CURRENT_TARGET}_INCLUDES}>"
-        )
+    target_link_libraries(${CURRENT_TARGET} ${${CURRENT_TARGET}_LIBRARIES})
 
-target_link_libraries(${CURRENT_TARGET} ${${CURRENT_TARGET}_LIBRARIES})
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-braces -Wno-missing-field-initializers -std=gnu99 -fno-strict-aliasing>)
 
-    target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-braces -Wno-missing-field-initializers -std=gnu99 -fno-strict-aliasing>)
+        if(USE_LIBC++)
+            target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14 -stdlib=libc++>)
+        else()
+            target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14>)
+        endif()
 
-    if(USE_LIBC++)
-        target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14 -stdlib=libc++>)
-    else()
-        target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14>)
+        target_compile_options(${CURRENT_TARGET} PUBLIC $<$<CONFIG:DEBUG>:-g>)
     endif()
 
-    target_compile_options(${CURRENT_TARGET} PUBLIC $<$<CONFIG:DEBUG>:-g>)
-endif()
+    set_target_properties(${CURRENT_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
+    set_target_properties(${CURRENT_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set_target_properties(${CURRENT_TARGET} PROPERTIES BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set_target_properties(${CURRENT_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+else()
+    if(BUILD_WITH_DATE_TIME)
+        add_library(${CURRENT_TARGET} STATIC
+                ${${CURRENT_TARGET}_HEADERS}
+                ${${CURRENT_TARGET}_SOURCES}
+                )
 
-set_target_properties(${CURRENT_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(${CURRENT_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set_target_properties(${CURRENT_TARGET} PROPERTIES BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set_target_properties(${CURRENT_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+        target_include_directories(${CURRENT_TARGET} PUBLIC
+                "$<BUILD_INTERFACE:${${CURRENT_TARGET}_INCLUDES}>"
+                )
+
+        target_link_libraries(${CURRENT_TARGET} ${${CURRENT_TARGET}_LIBRARIES})
+
+        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+
+            target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-braces -Wno-missing-field-initializers -std=gnu99 -fno-strict-aliasing>)
+
+            if(USE_LIBC++)
+                target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14 -stdlib=libc++>)
+            else()
+                target_compile_options(${CURRENT_TARGET} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14>)
+            endif()
+
+            target_compile_options(${CURRENT_TARGET} PUBLIC $<$<CONFIG:DEBUG>:-g>)
+        endif()
+
+        set_target_properties(${CURRENT_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
+        set_target_properties(${CURRENT_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+        set_target_properties(${CURRENT_TARGET} PROPERTIES BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+        set_target_properties(${CURRENT_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    else()
+        add_library(${CURRENT_TARGET} INTERFACE)
+
+        target_include_directories(${CURRENT_TARGET} INTERFACE
+                "$<BUILD_INTERFACE:${${CURRENT_TARGET}_INCLUDES}>"
+                )
+
+        target_link_libraries(${CURRENT_TARGET} INTERFACE ${${CURRENT_TARGET}_LIBRARIES})
+
+        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+
+            target_compile_options(${CURRENT_TARGET} INTERFACE $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-braces -Wno-missing-field-initializers -std=gnu99 -fno-strict-aliasing>)
+
+            if(USE_LIBC++)
+                target_compile_options(${CURRENT_TARGET} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14 -stdlib=libc++>)
+            else()
+                target_compile_options(${CURRENT_TARGET} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Werror-implicit-function-declaration -Wno-missing-field-initializers -fno-strict-aliasing -std=gnu++14>)
+            endif()
+
+            target_compile_options(${CURRENT_TARGET} INTERFACE $<$<CONFIG:DEBUG>:-g>)
+        endif()
+    endif()
+endif()
 
 if(APPLE AND NOT ${CMAKE_TARGET_ARCHITECTURE} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
     set_target_properties(${CURRENT_TARGET} PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${APPLE_CODE_SIGN_IDENTITY})
