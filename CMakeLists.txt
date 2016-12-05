@@ -62,7 +62,9 @@ endif()
 configure_file(${PROJECT_SOURCE_DIR}/odb/boost/details/config.h.in
         ${PROJECT_SOURCE_DIR}/odb/boost/details/config.h)
 
-find_package(Boost COMPONENTS date_time)
+if(NOT TARGET boost::date_time AND ${CMAKE_TARGET_ARCHITECTURE} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+    find_package(Boost COMPONENTS date_time)
+endif()
 
 find_package(ODB OPTIONAL_COMPONENTS mssql mysql pgsql oracle sqlite)
 
